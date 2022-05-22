@@ -20,10 +20,13 @@
             <el-table-column prop="questionType" label="题目类型" width="100"></el-table-column>
             <el-table-column prop="cost" label="试题分数" width="100"></el-table-column>
             <el-table-column prop="difficultyLevel" label="难度等级" width="100"></el-table-column>
-            <el-table-column fixed="right" label="操作">
+            <el-table-column fixed="right" label="操作" >
               <template slot-scope="scope">
+                <div style="display: flex;">
                 <el-button :disabled="scope.row.btnn == 1" @click="addToExam(scope.row)" type="warning" size="small">添加</el-button>
-                <el-button :disabled="scope.row.btnn == 1" @click="delFromExam(scope.row)" type="danger" size="small">删除</el-button>
+                <el-button :disabled="scope.row.btnn == 1" @click="addScore(scope.row)" type="warning"  size="small">加分</el-button>
+                <el-button :disabled="scope.row.btnn == 1" @click="delScore(scope.row)" type="warning"  size="small">减分</el-button>
+                </div>
               </template>
             </el-table-column>
           </el-table>
@@ -45,21 +48,21 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="选择题数量：">
-                  <el-input-number v-model="autodata.cnumber" class="w150" min="0" max="100"></el-input-number>
+                  <el-input-number v-model="autodata.cnumber" class="w150" :min="0" :max="100"></el-input-number>
                 </el-form-item>
                 <el-form-item label="选择题分数：">
-                    <el-input-number v-model="autodata.ccost" class="w150" min="0" max="100"></el-input-number>
+                    <el-input-number v-model="autodata.ccost" class="w150" :min="0" :max="100"></el-input-number>
                 </el-form-item>
                 <el-form-item label="解答题数量：">
-                  <el-input-number v-model="autodata.tnumber" class="w150" min="0" max="100"></el-input-number>
+                  <el-input-number v-model="autodata.tnumber" class="w150" :min="0" :max="100"></el-input-number>
                 </el-form-item>
                 <el-form-item label="解答题分数：">
-                  <el-input-number v-model="autodata.tcost" class="w150" min="0" max="100"></el-input-number>
+                  <el-input-number v-model="autodata.tcost" class="w150" :min="0" :max="100"></el-input-number>
                 </el-form-item>
                 <el-form-item label="选择类别：" >
                   <el-col :span="11" style="display: flex; width: 200px;">
-                    <el-input v-model="autodata.subject" type="datetime" placeholder="类别" class="w150" style="width: 100px;margin-left: 20px;" > </el-input>
-                    <div style="margin-left:20px;">当前总分:<span id='sumScore'></span></div>
+                    <el-input v-model="autodata.subject" type="datetime" placeholder="类别" class="w150" style="width: 100px;" > </el-input>
+                    <div style="margin-left:20px;width:100px;">当前总分:<span id='score'>{{score}}</span></div>
                   </el-col>
                 </el-form-item>
                 <el-form-item>
@@ -69,7 +72,23 @@
             </section>
         </div>
       </el-tab-pane>
-
+      <el-tab-pane name="third">
+        <span slot="label"><i class="iconfont el-icon-setting"></i>管理试题</span>
+          <el-table :data="exitQuestions" border>
+            <el-table-column fixed="left" prop="stem" label="题目信息" width="400"></el-table-column>
+            <el-table-column prop="subject" label="类别" width="200"></el-table-column>
+            <el-table-column prop="questionType" label="题目类型" width="100"></el-table-column>
+            <el-table-column prop="cost" label="试题分数" width="100"></el-table-column>
+            <el-table-column prop="difficultyLevel" label="难度等级" width="100"></el-table-column>
+            <el-table-column fixed="right" label="操作" >
+              <template slot-scope="scope">
+                <div style="display: flex;">
+                <el-button :disabled="scope.row.btnn == 1" @click="delFromExam(scope.row)" type="danger"  size="small">删除</el-button>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -128,27 +147,78 @@ export default {
       paperId:null,
       examquestion:{
         exam:null,
-        question:null
+        question:null,
+        score:null,
       },
       show:1,
       score:0,
+      examScore:0,
+      exitQuestions:null,
     };
   },
   created() {
     this.getParams()
+    this.$axios(
+      {
+         url: `https://localhost:49153/examScore/${this.paperId}`,
+         method:'get'
+      }).then(res => {
+        this.score = res.data;
+      });
+    this.$axios(
+      {
+        url:`https://localhost:49153/api/exam/exam/${this.paperId}`,
+        method:'get',
+      }
+    ).then(res => {
+      this.examScore = res.data.examScore;
+    })
+    this.$axios(
+      {
+        url:`https://localhost:49153/questionExam/Exam=${this.paperId}`,
+        method:'get',
+      }
+    ).then(res => {
+      this.exitQuestions = res.data.value;
+    })
   },
   methods: {
     // handleClick(tab, event) {
     //   console.log(tab, event);
     // },
+    getAllQuestion(){
+      this.$axios(
+      {
+        url:`https://localhost:49153/questionExam/Exam=${this.paperId}`,
+        method:'get',
+      }
+      ).then(res => {
+      this.exitQuestions = res.data.value;
+      })
+    },
     autocreate(autodata){
       autodata.exam=this.paperId;
+      var edata = { 
+        exam:autodata.exam,
+        cnumber:autodata.cnumber,
+        tnumber:autodata.tnumber,
+        ccost:autodata.ccost,
+        tcost:autodata.tcost,
+        subject:autodata.subject,
+        difficultyValue:autodata.difficultyValue,
+      }
+      if(edata.cnumber * edata.ccost + edata.tnumber * edata.tcost + this.score> this.examScore){
+        this.$message({ //成功修改提示
+            message: '添加失败，合计总分不能超过'+ this.examScore,
+            type: 'success'
+          });
+      }
       this.$axios(
         {
           url:`https://localhost:49153/api/question/autoquestion`,
           method:'post',
           data:{
-            ...this.autodata
+            ...edata
           }
         }
       ).then(
@@ -157,6 +227,7 @@ export default {
             message: '生成成功',
             type: 'success'
           });
+          location.reload();
         }
       ).catch(error => console.log(error))
     },
@@ -164,9 +235,9 @@ export default {
       this.paperId = this.$route.query.id
     },
     search(searchKey){
-      this.$axios(`https://localhost:49153/api/question/questionbase/${this.searchKey}`).then(res => {
+      this.$axios(`https://localhost:49153/api/question/questionbase/${this.searchKey}&${this.paperId}`).then(res => {
         this.questions = res.data;
-        questions.forEach(el=> {
+        this.questions.forEach(el=> {
           el.btnn=0;
         });
       }).catch
@@ -175,9 +246,19 @@ export default {
     },
     addToExam(row){
       var id=row.id;
-      console.log(row)
+      var self = this;
       this.examquestion.exam=this.paperId;
       this.examquestion.question=id;
+      this.examquestion.score = row.cost;
+      if(this.score + row.cost > this.examScore)
+      {
+        self.$message({ //成功修改提示
+            message: '分数溢出，无法添加',
+            type: 'success'
+          });
+        return;
+      }
+        
       this.$axios({
         url:'https://localhost:49153/questionExam/add',
         method:'post',
@@ -187,18 +268,25 @@ export default {
       }).then(row.btnn=1)
       .then(
         res => {
-          this.score += Number(row.cost);
-          this.$message({ //成功修改提示
+          self.score += Number(row.cost);
+          self.search(self.searchKey);
+          self.$message({ //成功修改提示
             message: '添加成功',
             type: 'success'
           });
+          
         }
       )
       .catch(error => console.log(error));
       
     },
+    addScore(row){
+      row.cost = parseInt(row.cost) + 1;
+    },
+    delScore(row){
+      row.cost = parseInt(row.cost) - 1;
+    },
     delFromExam(row){
-      console.log(row)
       var id=row.id;
       var exam=this.paperId;
       var question=id;
@@ -213,7 +301,7 @@ export default {
             message: '删除成功',
             type: 'success'
           });
-          
+          this.getAllQuestion();
         }
       )
       .catch(error => console.log(error))
@@ -244,6 +332,9 @@ export default {
     margin-right: 10px;
   }
   .icon-daoru-tianchong {
+    margin-right: 10px;
+  }
+  .el-icon-setting{
     margin-right: 10px;
   }
   .append {

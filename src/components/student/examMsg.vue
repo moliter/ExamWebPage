@@ -78,7 +78,7 @@ export default {
       this.$axios(`https://localhost:49153/questionExamScore/Exam=${examCode}`).then(res => {  //通过examCode请求试卷详细信息
         this.score = res.data;
         this.choicescore = this.score.value.cscore.cost;
-        this.choicescore = this.score.value.tscore.cost;
+        this.txtscore = this.score.value.tscore.cost;
         this.choicenum = this.score.value.cscore.count;
         this.txtnum = this.score.value.tscore.count;
         this.questionNumber = this.score.value.cscore.count + this.score.value.tscore.count;

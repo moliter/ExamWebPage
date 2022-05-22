@@ -14,9 +14,10 @@
             <el-tag  type="warning">学生答案:</el-tag>
             <el-input type="textarea" readonly="readonly" v-model="studentAnswer" :rows="5" show-word-limit  style="height: 100%"></el-input>
           </div>
-        <div style="margin: 50px 50px;">
+        <div style="margin: 50px 50px;display:flex;">
             <el-tag type="warning" style="marigin: auto">学生得分:</el-tag>
-            <el-input-number v-model="num" :min="1" :max="100" ></el-input-number>
+            <el-input-number v-model="num" :min="1" :max="100" style="margin-left:10px"></el-input-number>
+            <div style="margin:10px;color: #e6a23c;">最大分值：<span>{{maxcost}}</span></div>
             <el-button  type="warning" @click="postscore(num)" > 提交</el-button>
             <el-button type="warning" @click="toback()"> 返回</el-button>
         </div>
@@ -34,7 +35,8 @@ export default {
             studentAnswer:"",
             stuid:"",
             questionid:"",
-            examid:""
+            examid:"",
+            maxcost:20,
         }
     },
     created(){

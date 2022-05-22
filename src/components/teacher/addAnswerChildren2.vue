@@ -258,6 +258,7 @@ export default {
     },
     changeSubmit() { //选择题题库提交
       this.postChange.istype = "choice";
+      this.postChange.cost = 0;
       this.postChange.cost  = this.postChange.cost.toString();
       this.$axios({ //提交数据到选择题题库表
         url: 'https://localhost:49153/cquestion/add',
@@ -278,6 +279,7 @@ export default {
     },
     fillSubmit() { //解答题提交
       this.postFill.istype='txt';
+      this.postChange.cost = 0;
       this.postFill.cost=this.postFill.cost.toString();
       var rquestion = {
         cost:this.postFill.cost,

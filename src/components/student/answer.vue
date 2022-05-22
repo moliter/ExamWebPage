@@ -17,6 +17,25 @@
        </ul>
      </div>
      <div class="flexarea">
+       <transition name="slider-fade">
+          <div class="left" v-if="slider_flag">
+            <div class="l-bottom">
+              <div class="item">
+                <ul>
+                  <li v-for="(list, index1) in allquestions" :key="index1">
+                    <a href="javascript:;" 
+                      @click="change(index1)"
+                      :class="{'border': index == index1,'bg': bg_flag && allquestions[index1].isClick == true}">
+                      <span :class="{'mark': allquestions[index1].isMark == true}"></span>
+                      {{index1+1}}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="final" @click="commit()">结束考试</div>
+            </div>
+          </div>
+        </transition>  
         <transition name="slider-fade">
         <div class="right">
           <div class="title">
@@ -65,6 +84,8 @@ export default {
       startTime: null, //考试开始时间
       endTime: null, //考试结束时间
       time: null, //考试持续时间
+      bg_flag: false,
+      slider_flag: true,
       flag: false, //个人信息显示隐藏标识符
       currentType: 1, //当前题型类型  1--选择题  2--文本题 
       radio: '', 
@@ -282,6 +303,29 @@ export default {
         }
       )
     },
+    change(index){
+      var self = this;
+      self.index = index;
+      if(self.allquestions[index].qclass == "choice")
+      {
+        self.currentType=1
+      }
+      if(this.allquestions[index].qclass == "txt")
+      {
+        self.currentType=2
+      }
+      this.$axios({
+            url:`https://localhost:49153/questionId/Exam=${this.examData.id}&Question=${this.allquestions[index].id}`,
+            method:'get',
+          }).then(res =>{
+            this.getdbanswer(res.data,this.userInfo.id);
+            self.stem = self.allquestions[self.index].stem;
+            self.choiceA = self.allquestions[self.index].choiceA;
+            self.choiceB = self.allquestions[self.index].choiceB;
+            self.choiceC = self.allquestions[self.index].choiceC;
+            self.choiceD = self.allquestions[self.index].choiceD;
+          });
+    },
     getdbanswer(questionId,studentId){
       var self=this;
       var answer = this.$axios({
@@ -494,7 +538,7 @@ export default {
   margin-top: 22px;
 }
 #answer .left .item {
-  padding: 0px;
+  padding-top: 10px;
   font-size: 16px;
 }
 .l-bottom {

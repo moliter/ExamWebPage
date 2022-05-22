@@ -23,7 +23,7 @@
             <el-input v-model="form.name"></el-input>
           </el-form-item>
           <el-form-item label="班级">
-            <el-input v-model="form.class"></el-input>
+            <el-input v-model="form.className"></el-input>
           </el-form-item>
           <el-form-item label="账号">
             <el-input v-model="form.account"></el-input>
@@ -48,11 +48,12 @@ export default {
       stus:null,
       form: {
         name:'',
-        class:'',
+        className:'',
         account:'',
         password:'',
       },
       dialogVisible:null,
+      account:null,
     };
   },
   created() {
@@ -80,8 +81,9 @@ export default {
     },
     checkGrade(row) { //修改学生信息
       this.dialogVisible = true
+      this.account = row.account
       this.form.name = row.name
-      this.form.class = row.className
+      this.form.className = row.className
       this.form.account = row.account
       this.form.password = row.password
     },
@@ -89,7 +91,7 @@ export default {
     submit() { //提交更改
       this.dialogVisible = false
       this.$axios({
-        url: `https://localhost:49153/users/${account}`,
+        url: `https://localhost:49153/userstu/${this.account}`,
         method: 'put',
         data: {
           ...this.form

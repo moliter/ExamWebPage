@@ -93,6 +93,7 @@ export default {
         url: `https://localhost:49153/users/adduser`,
         method: 'post',
         data: {
+            role:this.role,
             ...this.userreturnDTO
         }
       }).then(res=>{
