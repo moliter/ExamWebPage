@@ -16,7 +16,7 @@
           </div>
         <div style="margin: 50px 50px;display:flex;">
             <el-tag type="warning" style="marigin: auto">学生得分:</el-tag>
-            <el-input-number v-model="num" :min="1" :max="100" style="margin-left:10px"></el-input-number>
+            <el-input-number v-model="num" :min="1" :max="maxcost" style="margin-left:10px"></el-input-number>
             <div style="margin:10px;color: #e6a23c;">最大分值：<span>{{maxcost}}</span></div>
             <el-button  type="warning" @click="postscore(num)" > 提交</el-button>
             <el-button type="warning" @click="toback()"> 返回</el-button>
@@ -36,7 +36,7 @@ export default {
             stuid:"",
             questionid:"",
             examid:"",
-            maxcost:20,
+            maxcost:0,
         }
     },
     created(){
@@ -52,6 +52,7 @@ export default {
           this.$axios(`https://localhost:49153/questionanswer/${this.stuid}&${this.questionid}`).then(res => {
               this.question = res.data.question;
               this.studentAnswer = res.data.studentAnswer;
+              this.maxcost = res.data.cost;
           })
       },
       postscore(num){

@@ -32,7 +32,7 @@
                   </li>
                 </ul>
               </div>
-              <div class="final" @click="commit()">结束考试</div>
+              <div class="final" @click="submitExam()">结束考试</div>
             </div>
           </div>
         </transition>  
@@ -226,11 +226,11 @@ export default {
           method:'get',
         }).then(res =>{
           self.getdbanswer(res.data,self.userInfo.id)
-          self.stem = self.allquestions[self.index].stem;
-          self.choiceA = self.allquestions[self.index].choiceA;
-          self.choiceB = self.allquestions[self.index].choiceB;
-          self.choiceC = self.allquestions[self.index].choiceC;
-          self.choiceD = self.allquestions[self.index].choiceD;
+          self.stem = self.allquestions[self.index-1].stem;
+          self.choiceA = self.allquestions[self.index-1].choiceA;
+          self.choiceB = self.allquestions[self.index-1].choiceB;
+          self.choiceC = self.allquestions[self.index-1].choiceC;
+          self.choiceD = self.allquestions[self.index-1].choiceD;
         this.$forceUpdate();
       })
       })
@@ -306,6 +306,7 @@ export default {
     change(index){
       var self = this;
       self.index = index;
+      self.number = index+1;
       if(self.allquestions[index].qclass == "choice")
       {
         self.currentType=1
@@ -358,7 +359,6 @@ export default {
             message: '考生注意,考试时间还剩10分钟！！！'
           })
           if(this.time == 0) {
-            console.log("考试时间已到,强制交卷。")
             this.$axios({
                 url:`https://localhost:49153/submitExam/${self.userInfo.id}/${self.examData.id}`,
                 method:'get',
@@ -369,6 +369,17 @@ export default {
           }
         }
       },1000 * 60)
+    },
+    submitExam(){
+      if(confirm("是否 提交试卷?")){
+        this.$axios({
+            url:`https://localhost:49153/submitExam/${this.userInfo.id}/${this.examData.id}`,
+            method:'get',
+          }).then(res => {
+                window.removeEventListener("visibilitychange", this.alertSrceen);
+                this.$router.push({path:'/student'})
+          })
+        }
     }
   },
   computed:mapState(["isPractice"])
