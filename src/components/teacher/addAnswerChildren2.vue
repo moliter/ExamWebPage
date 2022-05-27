@@ -279,7 +279,7 @@ export default {
     },
     fillSubmit() { //解答题提交
       this.postFill.istype='txt';
-      this.postChange.cost = 0;
+      this.postFill.cost = 0;
       this.postFill.cost=this.postFill.cost.toString();
       var rquestion = {
         cost:this.postFill.cost,
