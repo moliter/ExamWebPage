@@ -37,13 +37,6 @@ export default {
     return {
       isTransition: false, //是否渲染完成
       score: 0, //总分
-      imgShow: false, //不及格图片显示
-      imgSrc: {
-        fail1: require("@/assets/img/cry1.gif"),
-        fail2: require('@/assets/img/cry2.jpg'),
-        pass1: require('@/assets/img/good1.jpg'),
-        pass2: require('@/assets/img/good2.gif')
-      },
       startTime: null, //考试开始时间
       endTime: null, //考试结束时间
     }
