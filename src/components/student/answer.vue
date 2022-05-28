@@ -25,8 +25,7 @@
                   <li v-for="(list, index1) in allquestions" :key="index1">
                     <a href="javascript:;" 
                       @click="change(index1)"
-                      :class="{'border': index == index1,'bg': bg_flag && allquestions[index1].isClick == true}">
-                      <span :class="{'mark': allquestions[index1].isMark == true}"></span>
+                      :class="{'border': index == index1,'bg': bg_flag }">
                       {{index1+1}}
                     </a>
                   </li>
