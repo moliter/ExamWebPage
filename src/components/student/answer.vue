@@ -4,7 +4,7 @@
     <!--顶部信息栏-->
      <div class="top" background-color=#002edd >
        <ul class="item">
-         <li><i class="iconfont icon-menufold icon20" ref="toggle" @click="slider_flag = !slider_flag"></i></li>
+         <li><i class="iconfont icon-menufold icon20" @click="slider_flag = !slider_flag"></i></li>
          <li>{{this.examData.name}}</li>
          <li @click="flag = !flag">
            <i class="iconfont icon-user icon20"></i>
@@ -25,7 +25,7 @@
                   <li v-for="(list, index1) in allquestions" :key="index1">
                     <a href="javascript:;" 
                       @click="change(index1)"
-                      :class="{'border': index == index1,'bg': bg_flag }">
+                      :class="{'border': index == index1 }">
                       {{index1+1}}
                     </a>
                   </li>
